@@ -131,5 +131,5 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
   .trajectory-section { padding: 16px; }
   .trajectory-heading { align-items: start; flex-direction: column; gap: 8px; }
   .trajectory-actions { justify-content: space-between; width: 100%; }
-  .canvas-wrap { aspect-ratio: auto; height: clamp(170px, 58vw, 230px); min-height: 0; }
+  .canvas-wrap { aspect-ratio: auto; height: clamp(200px, 58vw, 250px); min-height: 0; }
 }

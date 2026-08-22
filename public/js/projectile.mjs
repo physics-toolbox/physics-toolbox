@@ -35,7 +35,7 @@ function drawTrajectory(values, result, progress = 0) {
   context.setTransform(ratio, 0, 0, ratio, 0, 0);
   context.clearRect(0, 0, width, height);
 
-  const padding = { left: 64, right: 30, top: 36, bottom: 48 };
+  const padding = { left: 54, right: 30, top: 30, bottom: 58 };
   const graphWidth = width - padding.left - padding.right;
   const graphHeight = height - padding.top - padding.bottom;
   // Keep the same physical scale on both axes so launch-angle changes alter the visible curve.
@@ -85,15 +85,45 @@ function drawTrajectory(values, result, progress = 0) {
     context.arc(xPixel(result.range), yPixel(0), 4, 0, Math.PI * 2);
     context.fill();
   }
+
   context.fillStyle = "#52636c";
   context.font = "12px Inter, system-ui, sans-serif";
+  context.textBaseline = "top";
+  context.textAlign = "center";
+  for (let i = 0; i <= 5; i += 1) {
+    const x = padding.left + graphWidth * i / 5;
+    context.fillText(formatAxis(xMax * i / 5), x, padding.top + graphHeight + 8);
+  }
   context.textBaseline = "middle";
   context.textAlign = "right";
-  context.fillText(`y = ${formatAxis(yMax)} m`, padding.left - 8, padding.top);
+  for (let i = 0; i <= 5; i += 1) {
+    const y = padding.top + graphHeight * i / 5;
+    context.fillText(formatAxis(yMax * (1 - i / 5)), padding.left - 8, y);
+  }
   context.textBaseline = "top";
-  context.fillText("0", padding.left - 8, padding.top + graphHeight + 7);
   context.textAlign = "right";
-  context.fillText(`x = ${formatAxis(xMax)} m`, padding.left + graphWidth, padding.top + graphHeight + 7);
+  context.fillText("x [m]", padding.left + graphWidth, padding.top + graphHeight + 29);
+  context.textBaseline = "middle";
+  context.fillText("y [m]", padding.left - 8, padding.top - 14);
+
+  const drawAnnotation = (text, x, y, align = "left") => {
+    context.font = "11px Inter, system-ui, sans-serif";
+    context.textAlign = align;
+    context.textBaseline = "middle";
+    context.fillStyle = "rgba(255, 255, 255, .86)";
+    const textWidth = context.measureText(text).width;
+    const left = align === "right" ? x - textWidth - 10 : x - 5;
+    context.fillRect(left, y - 10, textWidth + 10, 20);
+    context.fillStyle = "#006761";
+    context.fillText(text, x, y);
+  };
+  const peakProgress = result.peakTime / result.flightTime;
+  if (progress >= peakProgress) {
+    drawAnnotation(`最高 ${formatAxis(result.peakHeight)} m`, xPixel(result.vx * result.peakTime) + 8, yPixel(result.peakHeight) + 13);
+  }
+  if (progress === 1) {
+    drawAnnotation(`到達 ${formatAxis(result.range)} m`, xPixel(result.range) - 8, yPixel(0) - 15, "right");
+  }
   const elapsed = result.flightTime * progress;
   $("trajectory-scale").textContent = `t = ${format(elapsed)} / ${format(result.flightTime)} s`;
 }
