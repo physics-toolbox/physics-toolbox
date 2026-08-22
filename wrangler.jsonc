@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "physics-toolbox",
+  "compatibility_date": "2026-08-22",
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": "./public",
+    "html_handling": "force-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}
