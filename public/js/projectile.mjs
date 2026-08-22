@@ -13,6 +13,7 @@ let lastCalculation;
 
 function number(value) { return Number(value); }
 function format(value) { return Number(value.toPrecision(6)).toString(); }
+function formatAxis(value) { return Number(value.toPrecision(3)).toString(); }
 function withUnit(value, unit) { return `${format(value)} ${unit}`; }
 
 function readInputs() {
@@ -34,7 +35,7 @@ function drawTrajectory(values, result, progress = 0) {
   context.setTransform(ratio, 0, 0, ratio, 0, 0);
   context.clearRect(0, 0, width, height);
 
-  const padding = { left: 54, right: 25, top: 26, bottom: 42 };
+  const padding = { left: 64, right: 30, top: 36, bottom: 48 };
   const graphWidth = width - padding.left - padding.right;
   const graphHeight = height - padding.top - padding.bottom;
   // Keep the same physical scale on both axes so launch-angle changes alter the visible curve.
@@ -86,8 +87,13 @@ function drawTrajectory(values, result, progress = 0) {
   }
   context.fillStyle = "#52636c";
   context.font = "12px Inter, system-ui, sans-serif";
-  context.fillText("x [m]", width - padding.right - 33, height - 14);
-  context.fillText("y [m]", 8, padding.top + 5);
+  context.textBaseline = "middle";
+  context.textAlign = "right";
+  context.fillText(`y = ${formatAxis(yMax)} m`, padding.left - 8, padding.top);
+  context.textBaseline = "top";
+  context.fillText("0", padding.left - 8, padding.top + graphHeight + 7);
+  context.textAlign = "right";
+  context.fillText(`x = ${formatAxis(xMax)} m`, padding.left + graphWidth, padding.top + graphHeight + 7);
   const elapsed = result.flightTime * progress;
   $("trajectory-scale").textContent = `t = ${format(elapsed)} / ${format(result.flightTime)} s`;
 }
