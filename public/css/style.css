@@ -37,6 +37,15 @@ button, input, select { font: inherit; }
 .primary-link { width: max-content; margin-top: 14px; }
 .primary-link:hover, .calculate-button:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
 
+.tool-index { max-width: 900px; }
+.tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.tool-card { background: var(--surface); border: 1px solid var(--line); border-radius: 7px; color: var(--ink); display: grid; min-height: 200px; padding: 20px; text-decoration: none; transition: border-color .15s ease, box-shadow .15s ease; }
+.tool-card:hover { border-color: var(--accent); box-shadow: 0 5px 14px rgba(24, 34, 44, .08); }
+.tool-card__number { color: var(--accent); font-size: .78rem; font-weight: 750; letter-spacing: .08em; }
+.tool-card h2 { font-size: 1.15rem; margin: 18px 0 7px; }
+.tool-card p { color: var(--muted); font-size: .9rem; line-height: 1.55; margin: 0; }
+.tool-card__link { align-self: end; color: var(--accent-dark); font-size: .88rem; font-weight: 750; margin-top: 18px; }
+
 .site-header { background: #102a35; color: #fff; }
 .site-header__inner { max-width: 1180px; padding: 18px 24px; margin: auto; display: flex; align-items: baseline; gap: 14px; }
 .site-header a { color: #fff; text-decoration: none; font-weight: 760; letter-spacing: .03em; }
