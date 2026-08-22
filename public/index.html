@@ -1,18 +1,48 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Practical relativistic fixed-target kinematics calculators for physics." />
-    <title>Physics Toolbox</title>
+    <meta name="description" content="初速度と角度から放物投げの軌跡、到達距離、最高点を計算する物理 Calculator。" />
+    <title>放物投げ Calculator | Physics Toolbox</title>
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <main class="landing-shell">
-      <p class="eyebrow">PHYSICS TOOLBOX</p>
-      <h1>Useful calculations for real physics work.</h1>
-      <p class="landing-copy">Small, transparent tools for kinematics, detectors, and data analysis.</p>
-      <a class="primary-link" href="tools/fixed-target/">Open Fixed-target Kinematics</a>
+    <header class="site-header"><div class="site-header__inner"><a href="./">PHYSICS TOOLBOX</a><span>基礎から使える物理計算ツール</span></div></header>
+    <main class="page projectile-page">
+      <section class="page-heading">
+        <p class="eyebrow">ELEMENTARY MECHANICS</p>
+        <h1>放物投げ Calculator</h1>
+        <p>初速度、射出角、初期高さから、水平到達距離・飛行時間・最高到達点を計算します。空気抵抗は考えません。</p>
+      </section>
+      <div class="projectile-layout">
+        <section class="panel projectile-inputs" aria-label="放物投げの入力">
+          <div class="panel-heading"><h2>条件を入力</h2><span class="panel-note">SI units</span></div>
+          <div class="fields">
+            <div class="field"><label for="initial-speed">初速度 v₀</label><div class="input-with-unit"><input id="initial-speed" type="number" value="20" min="0" step="any" inputmode="decimal" /><span class="unit">m/s</span></div></div>
+            <div class="field"><label for="launch-angle">射出角 θ</label><div class="input-with-unit"><input id="launch-angle" type="number" value="45" min="0" max="90" step="any" inputmode="decimal" /><span class="unit">deg</span></div></div>
+            <div class="field"><label for="initial-height">初期高さ y₀</label><div class="input-with-unit"><input id="initial-height" type="number" value="0" min="0" step="any" inputmode="decimal" /><span class="unit">m</span></div></div>
+            <div class="field"><label for="gravity">重力加速度 g</label><div class="input-with-unit"><input id="gravity" type="number" value="9.80665" min="0.0001" step="any" inputmode="decimal" /><span class="unit">m/s²</span></div></div>
+          </div>
+          <button id="calculate" class="calculate-button" type="button">計算する</button>
+          <p id="input-error" class="input-error" role="alert"></p>
+        </section>
+        <section class="results-panel projectile-results" aria-live="polite">
+          <div class="results-header"><h2>計算結果</h2><p id="result-summary" class="result-summary"></p></div>
+          <div class="result-group"><h3>着地まで</h3><div class="metrics"><div class="metric"><span class="metric-label">飛行時間</span><span id="flight-time" class="metric-value">-</span></div><div class="metric"><span class="metric-label">水平到達距離</span><span id="range" class="metric-value">-</span></div><div class="metric"><span class="metric-label">最高到達点の時刻</span><span id="peak-time" class="metric-value">-</span></div><div class="metric"><span class="metric-label">最高到達点の高さ</span><span id="peak-height" class="metric-value">-</span></div></div></div>
+          <div class="result-group"><h3>速度</h3><div class="metrics"><div class="metric"><span class="metric-label">水平成分 vₓ</span><span id="horizontal-velocity" class="metric-value">-</span></div><div class="metric"><span class="metric-label">初速の鉛直成分 vᵧ₀</span><span id="vertical-velocity" class="metric-value">-</span></div><div class="metric"><span class="metric-label">着地時の速さ</span><span id="impact-speed" class="metric-value">-</span></div></div></div>
+        </section>
+      </div>
+      <section class="trajectory-section" aria-labelledby="trajectory-heading">
+        <div class="trajectory-heading"><div><p class="eyebrow">TRAJECTORY</p><h2 id="trajectory-heading">軌跡</h2></div><span id="trajectory-scale" class="panel-note"></span></div>
+        <div class="canvas-wrap"><canvas id="trajectory" role="img" aria-label="放物投げの軌跡グラフ"></canvas></div>
+      </section>
+      <section class="formula-section">
+        <h2>使っている式</h2>
+        <div class="formula-grid"><p><code>x(t) = v₀ cos θ · t</code></p><p><code>y(t) = y₀ + v₀ sin θ · t - ½gt²</code></p></div>
+        <p>空気抵抗、地球の曲率、重力加速度の高度依存性は無視しています。</p>
+      </section>
     </main>
+    <script type="module" src="js/projectile.mjs"></script>
   </body>
 </html>

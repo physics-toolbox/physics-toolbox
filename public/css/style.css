@@ -92,13 +92,32 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
 .formula { color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .76rem; line-height: 1.55; margin: 14px 0 0; }
 .disclaimer { color: var(--muted); font-size: .78rem; line-height: 1.55; margin: 18px 2px 0; }
 
+.projectile-page { max-width: 1040px; }
+.projectile-layout { display: grid; grid-template-columns: minmax(0, .9fr) minmax(330px, 1.1fr); gap: 24px; align-items: start; }
+.projectile-inputs { min-height: 100%; }
+.input-error { color: var(--negative); font-size: .82rem; line-height: 1.5; margin: 12px 0 0; min-height: 1.5em; }
+.trajectory-section, .formula-section { margin-top: 24px; }
+.trajectory-section { background: var(--surface); border: 1px solid var(--line); border-radius: 7px; padding: 22px; }
+.trajectory-heading { align-items: end; display: flex; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+.trajectory-heading .eyebrow { margin-bottom: 7px; }
+.trajectory-heading h2, .formula-section h2 { font-size: 1.05rem; margin: 0; }
+.canvas-wrap { aspect-ratio: 16 / 7; min-height: 250px; }
+#trajectory { display: block; height: 100%; width: 100%; }
+.formula-section { color: var(--muted); font-size: .88rem; line-height: 1.6; }
+.formula-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.formula-grid p { background: #edf4f3; border: 1px solid #d4e5e1; border-radius: 4px; color: #294840; margin: 0; padding: 8px 10px; }
+
 @media (max-width: 780px) {
   .site-header__inner { padding: 16px 18px; }
   .site-header span { display: none; }
   .page { padding: 28px 18px 48px; }
   .calculator-grid { grid-template-columns: 1fr; }
+  .projectile-layout { grid-template-columns: 1fr; }
 }
 @media (max-width: 460px) {
   .fields, .metrics { grid-template-columns: 1fr; }
   .target-mode { gap: 12px; }
+  .trajectory-section { padding: 16px; }
+  .trajectory-heading { align-items: start; flex-direction: column; gap: 8px; }
+  .canvas-wrap { min-height: 210px; }
 }
