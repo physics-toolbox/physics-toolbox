@@ -25,12 +25,7 @@
             <div class="field"><label for="initial-height">初期高さ y₀</label><div class="input-with-unit"><input id="initial-height" type="number" value="0" min="0" step="any" inputmode="decimal" /><span class="unit">m</span></div></div>
             <div class="field"><label for="gravity">重力加速度 g</label><div class="input-with-unit"><input id="gravity" type="number" value="9.80665" min="0.0001" step="any" inputmode="decimal" /><span class="unit">m/s²</span></div></div>
           </div>
-          <button id="calculate" class="calculate-button" type="button">投げて軌跡を描く</button>
           <p id="input-error" class="input-error" role="alert"></p>
-        </section>
-        <section class="trajectory-section" aria-labelledby="trajectory-heading">
-          <div class="trajectory-heading"><div><p class="eyebrow">TRAJECTORY</p><h2 id="trajectory-heading">軌跡</h2></div><span id="trajectory-scale" class="panel-note">条件を入力して投げてください</span></div>
-          <div class="canvas-wrap"><canvas id="trajectory" role="img" aria-label="放物投げの軌跡グラフ"></canvas></div>
         </section>
         <section class="results-panel projectile-results" aria-live="polite">
           <div class="results-header"><h2>計算結果</h2><p id="result-summary" class="result-summary"></p></div>
@@ -38,6 +33,10 @@
           <div class="result-group"><h3>速度</h3><div class="metrics"><div class="metric"><span class="metric-label">水平成分 vₓ</span><span id="horizontal-velocity" class="metric-value">-</span></div><div class="metric"><span class="metric-label">初速の鉛直成分 vᵧ₀</span><span id="vertical-velocity" class="metric-value">-</span></div><div class="metric"><span class="metric-label">着地時の速さ</span><span id="impact-speed" class="metric-value">-</span></div></div></div>
         </section>
       </div>
+      <section class="trajectory-section" aria-labelledby="trajectory-heading">
+        <div class="trajectory-heading"><div><p class="eyebrow">TRAJECTORY</p><h2 id="trajectory-heading">軌跡</h2></div><div class="trajectory-actions"><span id="trajectory-scale" class="panel-note">条件を入力して投げてください</span><button id="calculate" class="calculate-button trajectory-launch" type="button">投げる</button></div></div>
+        <div class="canvas-wrap"><canvas id="trajectory" role="img" aria-label="放物投げの軌跡グラフ"></canvas></div>
+      </section>
       <section class="formula-section">
         <h2>使っている式</h2>
         <div class="formula-grid"><p><code>x(t) = v₀ cos θ · t</code></p><p><code>y(t) = y₀ + v₀ sin θ · t - ½gt²</code></p></div>
