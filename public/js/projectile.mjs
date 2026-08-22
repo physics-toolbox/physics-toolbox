@@ -37,8 +37,12 @@ function drawTrajectory(values, result, progress = 0) {
   const padding = { left: 54, right: 25, top: 26, bottom: 42 };
   const graphWidth = width - padding.left - padding.right;
   const graphHeight = height - padding.top - padding.bottom;
-  const xMax = Math.max(result.range * 1.08, 1);
-  const yMax = Math.max(result.peakHeight * 1.18, values.height + 1);
+  // Keep the same physical scale on both axes so launch-angle changes alter the visible curve.
+  const desiredXMax = Math.max(result.range * 1.12, 1);
+  const desiredYMax = Math.max(result.peakHeight * 1.2, values.height + 1);
+  const metersPerPixel = Math.max(desiredXMax / graphWidth, desiredYMax / graphHeight);
+  const xMax = metersPerPixel * graphWidth;
+  const yMax = metersPerPixel * graphHeight;
   const xPixel = (x) => padding.left + x / xMax * graphWidth;
   const yPixel = (y) => padding.top + graphHeight - y / yMax * graphHeight;
 
