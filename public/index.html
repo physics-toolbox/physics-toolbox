@@ -24,7 +24,7 @@
             <div class="field"><label for="initial-height">初期高さ y₀</label><div class="input-with-unit"><input id="initial-height" type="number" value="0" min="0" step="any" inputmode="decimal" /><span class="unit">m</span></div></div>
             <div class="field"><label for="gravity">重力加速度 g</label><div class="input-with-unit"><input id="gravity" type="number" value="9.80665" min="0.0001" step="any" inputmode="decimal" /><span class="unit">m/s²</span></div></div>
           </div>
-          <button id="calculate" class="calculate-button" type="button">計算する</button>
+          <button id="calculate" class="calculate-button" type="button">投げて軌跡を描く</button>
           <p id="input-error" class="input-error" role="alert"></p>
         </section>
         <section class="results-panel projectile-results" aria-live="polite">
@@ -34,7 +34,7 @@
         </section>
       </div>
       <section class="trajectory-section" aria-labelledby="trajectory-heading">
-        <div class="trajectory-heading"><div><p class="eyebrow">TRAJECTORY</p><h2 id="trajectory-heading">軌跡</h2></div><span id="trajectory-scale" class="panel-note"></span></div>
+        <div class="trajectory-heading"><div><p class="eyebrow">TRAJECTORY</p><h2 id="trajectory-heading">軌跡</h2></div><span id="trajectory-scale" class="panel-note">条件を入力して投げてください</span></div>
         <div class="canvas-wrap"><canvas id="trajectory" role="img" aria-label="放物投げの軌跡グラフ"></canvas></div>
       </section>
       <section class="formula-section">

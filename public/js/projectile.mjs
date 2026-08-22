@@ -8,6 +8,8 @@ const output = {
   flightTime: $("flight-time"), range: $("range"), peakTime: $("peak-time"), peakHeight: $("peak-height"),
   vx: $("horizontal-velocity"), vy: $("vertical-velocity"), impactSpeed: $("impact-speed"),
 };
+let animationFrame;
+let lastCalculation;
 
 function number(value) { return Number(value); }
 function format(value) { return Number(value.toPrecision(6)).toString(); }
@@ -21,7 +23,7 @@ function readInputs() {
   return values;
 }
 
-function drawTrajectory(values, result) {
+function drawTrajectory(values, result, progress = 0) {
   const canvas = $("trajectory");
   const context = canvas.getContext("2d");
   const width = canvas.clientWidth;
@@ -52,28 +54,43 @@ function drawTrajectory(values, result) {
   context.lineWidth = 1.5;
   context.beginPath(); context.moveTo(padding.left, padding.top); context.lineTo(padding.left, padding.top + graphHeight); context.lineTo(padding.left + graphWidth, padding.top + graphHeight); context.stroke();
 
+  const segments = Math.max(1, Math.ceil(120 * progress));
   context.strokeStyle = "#007c76";
   context.lineWidth = 3;
   context.beginPath();
-  for (let i = 0; i <= 120; i += 1) {
-    const t = result.flightTime * i / 120;
+  for (let i = 0; i <= segments; i += 1) {
+    const t = result.flightTime * progress * i / segments;
     const x = result.vx * t;
     const y = values.height + result.vy * t - 0.5 * values.gravity * t ** 2;
     if (i === 0) context.moveTo(xPixel(x), yPixel(y)); else context.lineTo(xPixel(x), yPixel(y));
   }
-  context.stroke();
+  if (progress > 0) context.stroke();
 
   context.fillStyle = "#007c76";
-  [[0, values.height], [result.range, 0]].forEach(([x, y]) => { context.beginPath(); context.arc(xPixel(x), yPixel(y), 4, 0, Math.PI * 2); context.fill(); });
+  const currentTime = result.flightTime * progress;
+  const currentX = result.vx * currentTime;
+  const currentY = values.height + result.vy * currentTime - 0.5 * values.gravity * currentTime ** 2;
+  [[0, values.height], [currentX, currentY]].forEach(([x, y], index) => {
+    context.beginPath();
+    context.arc(xPixel(x), yPixel(y), index === 1 ? 7 : 4, 0, Math.PI * 2);
+    context.fill();
+  });
+  if (progress === 1) {
+    context.beginPath();
+    context.arc(xPixel(result.range), yPixel(0), 4, 0, Math.PI * 2);
+    context.fill();
+  }
   context.fillStyle = "#52636c";
   context.font = "12px Inter, system-ui, sans-serif";
   context.fillText("x [m]", width - padding.right - 33, height - 14);
   context.fillText("y [m]", 8, padding.top + 5);
-  $("trajectory-scale").textContent = `x: 0–${format(xMax)} m / y: 0–${format(yMax)} m`;
+  const elapsed = result.flightTime * progress;
+  $("trajectory-scale").textContent = `t = ${format(elapsed)} / ${format(result.flightTime)} s`;
 }
 
-function calculate() {
+function calculate({ animate = false } = {}) {
   const error = $("input-error");
+  cancelAnimationFrame(animationFrame);
   try {
     const values = readInputs();
     const result = calculateProjectile(values);
@@ -86,13 +103,32 @@ function calculate() {
     output.impactSpeed.textContent = withUnit(result.impactSpeed, "m/s");
     $("result-summary").textContent = `${format(values.speed)} m/s, ${format(values.angleDeg)}度で射出`;
     error.textContent = "";
-    drawTrajectory(values, result);
+    lastCalculation = { values, result };
+    if (animate) {
+      animateTrajectory(values, result);
+    } else {
+      drawTrajectory(values, result, 0);
+    }
   } catch (reason) {
     error.textContent = reason.message;
   }
 }
 
-Object.values(inputs).forEach((input) => input.addEventListener("input", calculate));
-$("calculate").addEventListener("click", calculate);
-window.addEventListener("resize", calculate);
+function animateTrajectory(values, result) {
+  const duration = Math.min(Math.max(result.flightTime * 350, 900), 2200);
+  let startedAt;
+  const render = (timestamp) => {
+    startedAt ??= timestamp;
+    const progress = Math.min((timestamp - startedAt) / duration, 1);
+    drawTrajectory(values, result, progress);
+    if (progress < 1) animationFrame = requestAnimationFrame(render);
+  };
+  animationFrame = requestAnimationFrame(render);
+}
+
+Object.values(inputs).forEach((input) => input.addEventListener("input", () => calculate()));
+$("calculate").addEventListener("click", () => calculate({ animate: true }));
+window.addEventListener("resize", () => {
+  if (lastCalculation) drawTrajectory(lastCalculation.values, lastCalculation.result, 0);
+});
 calculate();
