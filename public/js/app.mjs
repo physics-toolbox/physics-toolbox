@@ -3,9 +3,10 @@ import { excessEnergy, fixedTargetKinematics } from "./kinematics.mjs";
 
 const presets = {
   custom: [],
+  "p-p-pi0": ["proton", "proton", "pionZero"],
+  "pi-charge-exchange": ["pionZero", "neutron"],
   "lambda-eta": ["lambda", "eta"],
   "k-xi": ["kaonPlus", "xiMinus"],
-  "lambda-pi0": ["lambda", "pionZero"],
 };
 
 const $ = (id) => document.getElementById(id);
@@ -17,7 +18,7 @@ const elements = {
 
 elements.beamParticle.innerHTML = particleSelectOptions;
 elements.targetParticle.innerHTML = particleSelectOptions;
-elements.beamParticle.value = "kaonMinus";
+elements.beamParticle.value = "proton";
 elements.targetParticle.value = "proton";
 
 function format(value, digits = 5) {
@@ -100,5 +101,5 @@ document.querySelectorAll("input[name='target-mode']").forEach((radio) => radio.
 elements.reactionPreset.addEventListener("change", () => { setFinalState(presets[elements.reactionPreset.value]); calculate(); });
 $("add-particle").addEventListener("click", () => { elements.reactionPreset.value = "custom"; addFinalRow(); calculate(); });
 $("calculate").addEventListener("click", calculate);
-setFinalState(presets["lambda-eta"]);
+setFinalState(presets["p-p-pi0"]);
 calculate();
