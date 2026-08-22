@@ -21,7 +21,7 @@
             <div class="panel-heading"><h2>Beam</h2><span class="panel-note">Incident particle</span></div>
             <div class="fields">
               <div class="field"><label for="beam-particle">Particle</label><select id="beam-particle"></select></div>
-              <div class="field"><label for="beam-momentum">Momentum</label><div class="input-with-unit"><input id="beam-momentum" type="number" min="0" step="any" value="1.0" inputmode="decimal" /><span class="unit">GeV/c</span></div></div>
+              <div class="field"><label for="beam-momentum">Momentum</label><div class="input-with-unit"><input id="beam-momentum" type="number" min="0" step="any" value="2.0" inputmode="decimal" /><span class="unit">GeV/c</span></div></div>
             </div>
           </section>
           <section class="panel">
@@ -35,7 +35,7 @@
           </section>
           <section class="panel">
             <div class="panel-heading"><h2>Final state</h2><span class="panel-note">For threshold comparison</span></div>
-            <div class="field field-wide"><label for="reaction-preset">Quick setup</label><select id="reaction-preset"><option value="custom">Custom final state</option><option value="p-p-pi0" selected>p + p → p + p + pi0</option><option value="pi-charge-exchange">pi- + p → pi0 + n</option><option value="lambda-eta">K- + p → Lambda + eta</option><option value="k-xi">K- + p → K+ + Xi-</option></select></div>
+            <div class="field field-wide"><label for="reaction-preset">Quick setup</label><select id="reaction-preset"><option value="custom">Custom final state</option><option value="lambda-eta" selected>K- + p → Lambda + eta</option><option value="k-xi">K- + p → K+ + Xi-</option><option value="lambda-pi0">K- + p → Lambda + pi0</option></select></div>
             <div id="reaction-list" class="reaction-list" aria-label="Final-state particles"></div>
             <button id="add-particle" class="text-button" type="button">+ Add final-state particle</button>
             <button id="calculate" class="calculate-button" type="button">Calculate kinematics</button>
