@@ -39,37 +39,64 @@ function pendulumGeometry(width, height) {
   };
 }
 
+function drawComparisonLegend(context, x, y) {
+  context.font = "12px Inter, system-ui, sans-serif";
+  context.textBaseline = "middle";
+  context.fillStyle = "#007c76";
+  context.fillRect(x, y - 3, 18, 3);
+  context.fillStyle = "#40515a";
+  context.fillText("振り子", x + 25, y);
+  context.strokeStyle = "#cc6c28";
+  context.setLineDash([5, 4]);
+  context.beginPath(); context.moveTo(x + 86, y); context.lineTo(x + 104, y); context.stroke();
+  context.setLineDash([]);
+  context.fillStyle = "#40515a";
+  context.fillText("小角近似", x + 111, y);
+}
+
 function drawMotion(progress) {
-  const { samples, duration } = model;
+  const { parameters, samples, duration } = model;
   const { context, width, height } = setupCanvas($("pendulum-motion"));
   const { pivot, rodLength } = pendulumGeometry(width, height);
   const time = duration * progress;
   const nonlinearTheta = interpolateTheta(samples, time);
+  const smallTheta = parameters.angle * Math.cos(parameters.omega * time);
   const point = (theta) => ({ x: pivot.x + rodLength * Math.sin(theta), y: pivot.y + rodLength * Math.cos(theta) });
   const nonlinearPoint = point(nonlinearTheta);
+  const smallPoint = point(smallTheta);
 
   context.strokeStyle = "#e1e7e9";
   context.lineWidth = 1;
   context.beginPath(); context.arc(pivot.x, pivot.y, rodLength, 0, Math.PI, false); context.stroke();
+  context.strokeStyle = "#cc6c28";
+  context.lineWidth = 2;
+  context.setLineDash([7, 5]);
+  context.beginPath(); context.moveTo(pivot.x, pivot.y); context.lineTo(smallPoint.x, smallPoint.y); context.stroke();
+  context.setLineDash([]);
   context.strokeStyle = "#007c76";
   context.lineWidth = 3;
   context.beginPath(); context.moveTo(pivot.x, pivot.y); context.lineTo(nonlinearPoint.x, nonlinearPoint.y); context.stroke();
   context.fillStyle = "#007c76";
   context.beginPath(); context.arc(nonlinearPoint.x, nonlinearPoint.y, 10, 0, Math.PI * 2); context.fill();
+  context.fillStyle = "#cc6c28";
+  context.beginPath(); context.arc(smallPoint.x, smallPoint.y, 7, 0, Math.PI * 2); context.fill();
   context.fillStyle = "#18222c";
   context.beginPath(); context.arc(pivot.x, pivot.y, 5, 0, Math.PI * 2); context.fill();
+  drawComparisonLegend(context, 18, height - 18);
   $("pendulum-time").textContent = `t = ${format(time, 4)} / ${format(duration, 4)} s`;
 }
 
 function drawSimpleHarmonicMotion(progress) {
-  const { parameters, duration } = model;
+  const { parameters, samples, duration } = model;
   const { context, width, height } = setupCanvas($("simple-harmonic-motion"));
   const motionCanvas = $("pendulum-motion");
   const { rodLength } = pendulumGeometry(motionCanvas.clientWidth, motionCanvas.clientHeight);
   const time = duration * progress;
   const center = { x: width / 2, y: height / 2 + 8 };
-  const amplitude = Math.min(rodLength * parameters.angle, width * 0.42);
-  const position = center.x + amplitude * Math.cos(parameters.omega * time);
+  const amplitude = Math.min(rodLength * Math.sin(parameters.angle), width * 0.42);
+  const nonlinearPosition = center.x + rodLength * Math.sin(interpolateTheta(samples, time));
+  const smallTheta = parameters.angle * Math.cos(parameters.omega * time);
+  const smallPosition = center.x + rodLength * Math.sin(smallTheta);
 
   context.strokeStyle = "#dce4e7";
   context.lineWidth = 2;
@@ -85,14 +112,16 @@ function drawSimpleHarmonicMotion(progress) {
   context.fillStyle = "#52636c";
   context.textAlign = "center";
   context.textBaseline = "top";
-  context.fillText("-θ₀", center.x - amplitude, center.y + 36);
+  context.fillText("-x₀", center.x - amplitude, center.y + 36);
   context.fillText("0", center.x, center.y + 36);
-  context.fillText("+θ₀", center.x + amplitude, center.y + 36);
+  context.fillText("+x₀", center.x + amplitude, center.y + 36);
   context.textAlign = "left";
   context.textBaseline = "top";
-  context.fillText("x / L ≈ θ", 18, 16);
+  context.fillText("振り子の水平位置 x", 18, 16);
+  context.fillStyle = "#007c76";
+  context.beginPath(); context.arc(nonlinearPosition, center.y, 10, 0, Math.PI * 2); context.fill();
   context.fillStyle = "#cc6c28";
-  context.beginPath(); context.arc(position, center.y, 12, 0, Math.PI * 2); context.fill();
+  context.beginPath(); context.arc(smallPosition, center.y, 7, 0, Math.PI * 2); context.fill();
 }
 
 function drawPlot(progress) {
