@@ -133,7 +133,7 @@ function drawPlot(progress) {
   drawCurve("#cc6c28", [7, 5], (time) => parameters.angle * Math.cos(parameters.omega * time));
 }
 
-function update({ animate = false } = {}) {
+function update({ shouldAnimate = false } = {}) {
   cancelAnimationFrame(animationFrame);
   const error = $("pendulum-error");
   try {
@@ -147,7 +147,7 @@ function update({ animate = false } = {}) {
     output.omega.textContent = withUnit(parameters.omega, "rad/s");
     $("pendulum-summary").textContent = `${format(values.angleDeg)}度から静かに離した場合`;
     error.textContent = "";
-    if (animate) animate(); else { drawMotion(0); drawPlot(0); }
+    if (shouldAnimate) animate(); else { drawMotion(0); drawPlot(0); }
   } catch (reason) {
     error.textContent = reason.message;
   }
@@ -167,6 +167,6 @@ function animate() {
 }
 
 Object.values(inputs).forEach((input) => input.addEventListener("input", () => update()));
-$("pendulum-launch").addEventListener("click", () => update({ animate: true }));
+$("pendulum-launch").addEventListener("click", () => update({ shouldAnimate: true }));
 window.addEventListener("resize", () => { if (model) { drawMotion(0); drawPlot(0); } });
 update();
