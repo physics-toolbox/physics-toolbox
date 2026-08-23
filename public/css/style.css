@@ -117,6 +117,12 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
 .formula-section { margin-top: 24px; }
 .formula-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
 .formula-grid p { background: #edf4f3; border: 1px solid #d4e5e1; border-radius: 4px; color: #294840; margin: 0; padding: 8px 10px; }
+.pendulum-page { max-width: 1040px; }
+.pendulum-layout { display: grid; grid-template-columns: minmax(0, .9fr) minmax(330px, 1.1fr); gap: 24px; align-items: start; }
+.pendulum-visual { background: var(--surface); border: 1px solid var(--line); border-radius: 7px; margin-top: 24px; padding: 22px; }
+.pendulum-motion-wrap { aspect-ratio: 16 / 7; min-height: 260px; }
+.pendulum-plot-wrap { aspect-ratio: 16 / 7; min-height: 250px; }
+#pendulum-motion, #pendulum-plot { display: block; height: 100%; max-width: 100%; width: 100%; }
 
 @media (max-width: 780px) {
   .site-header__inner { padding: 16px 18px; }
@@ -124,6 +130,7 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
   .page { padding: 28px 18px 48px; }
   .calculator-grid { grid-template-columns: 1fr; }
   .projectile-layout { grid-template-columns: 1fr; }
+  .pendulum-layout { grid-template-columns: 1fr; }
 }
 @media (max-width: 460px) {
   .fields, .metrics { grid-template-columns: 1fr; }
@@ -132,4 +139,6 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
   .trajectory-heading { align-items: start; flex-direction: column; gap: 8px; }
   .trajectory-actions { justify-content: space-between; width: 100%; }
   .canvas-wrap { aspect-ratio: auto; height: clamp(200px, 58vw, 250px); min-height: 0; }
+  .pendulum-visual { padding: 16px; }
+  .pendulum-motion-wrap, .pendulum-plot-wrap { height: clamp(220px, 62vw, 270px); min-height: 0; }
 }

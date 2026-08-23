@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="単振り子の非線形な運動と小角近似の単振動を比較して描画する物理ツール。" />
+    <title>単振り子と単振動の比較・描画ツール | Physics Toolbox</title>
+    <link rel="stylesheet" href="../../css/style.css" />
+  </head>
+  <body>
+    <header class="site-header"><div class="site-header__inner"><a href="../../">PHYSICS TOOLBOX</a><span>基礎から使える物理計算ツール</span></div></header>
+    <main class="page pendulum-page">
+      <nav class="breadcrumb"><a href="../../">Toolbox</a> / 単振り子</nav>
+      <section class="page-heading"><p class="eyebrow">OSCILLATION</p><h1>単振り子と単振動の比較・描画ツール</h1><p>振り子の運動と、小角近似による単振動を同じ条件で比較します。摩擦と空気抵抗は考えません。</p></section>
+      <div class="pendulum-layout">
+        <section class="panel" aria-label="単振り子の入力">
+          <div class="panel-heading"><h2>条件を入力</h2><span class="panel-note">SI units</span></div>
+          <div class="fields">
+            <div class="field"><label for="pendulum-length">糸の長さ L</label><div class="input-with-unit"><input id="pendulum-length" type="number" value="1" min="0.001" step="any" inputmode="decimal" /><span class="unit">m</span></div></div>
+            <div class="field"><label for="pendulum-angle">初期角度 θ₀</label><div class="input-with-unit"><input id="pendulum-angle" type="number" value="30" min="0" max="85" step="any" inputmode="decimal" /><span class="unit">deg</span></div></div>
+            <div class="field field-wide"><label for="pendulum-gravity">重力加速度 g</label><div class="input-with-unit"><input id="pendulum-gravity" type="number" value="9.80665" min="0.0001" step="any" inputmode="decimal" /><span class="unit">m/s²</span></div></div>
+          </div>
+          <p id="pendulum-error" class="input-error" role="alert"></p>
+        </section>
+        <section class="results-panel" aria-live="polite">
+          <div class="results-header"><h2>周期の比較</h2><p id="pendulum-summary" class="result-summary"></p></div>
+          <div class="result-group"><div class="metrics"><div class="metric"><span class="metric-label">小角近似の周期</span><span id="small-period" class="metric-value">-</span></div><div class="metric"><span class="metric-label">振り子の周期</span><span id="nonlinear-period" class="metric-value">-</span></div><div class="metric"><span class="metric-label">周期の増加</span><span id="period-increase" class="metric-value">-</span></div><div class="metric"><span class="metric-label">角振動数 ω</span><span id="angular-frequency" class="metric-value">-</span></div></div></div>
+          <div class="result-group"><p class="formula">小角近似: θ(t) = θ₀ cos(√(g/L)t)<br />振り子: θ'' + (g/L) sin θ = 0</p></div>
+        </section>
+      </div>
+      <section class="pendulum-visual" aria-labelledby="motion-heading"><div class="trajectory-heading"><div><p class="eyebrow">MOTION</p><h2 id="motion-heading">振り子の運動</h2></div><div class="trajectory-actions"><span id="pendulum-time" class="panel-note"></span><button id="pendulum-launch" class="calculate-button trajectory-launch" type="button">振らせて比較する</button></div></div><div class="canvas-wrap pendulum-motion-wrap"><canvas id="pendulum-motion" role="img" aria-label="振り子と小角近似の比較アニメーション"></canvas></div></section>
+      <section class="pendulum-visual" aria-labelledby="plot-heading"><div class="trajectory-heading"><div><p class="eyebrow">ANGLE OVER TIME</p><h2 id="plot-heading">角度の変化</h2></div></div><div class="canvas-wrap pendulum-plot-wrap"><canvas id="pendulum-plot" role="img" aria-label="振り子と小角近似の角度対時間グラフ"></canvas></div></section>
+      <section class="formula-section"><h2>小角近似について</h2><p>角度が小さいときは <code>sin θ ≈ θ</code> と近似でき、振り子は単振動として扱えます。初期角度を大きくすると、この近似から少しずつずれて周期も長くなります。</p></section>
+    </main>
+    <script type="module" src="../../js/pendulum.mjs"></script>
+  </body>
+</html>
