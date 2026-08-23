@@ -121,8 +121,9 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
 .pendulum-layout { display: grid; grid-template-columns: minmax(0, .9fr) minmax(330px, 1.1fr); gap: 24px; align-items: start; }
 .pendulum-visual { background: var(--surface); border: 1px solid var(--line); border-radius: 7px; margin-top: 24px; padding: 22px; }
 .pendulum-motion-wrap { aspect-ratio: 16 / 7; min-height: 260px; }
+.shm-motion-wrap { aspect-ratio: 16 / 4.5; min-height: 190px; }
 .pendulum-plot-wrap { aspect-ratio: 16 / 7; min-height: 250px; }
-#pendulum-motion, #pendulum-plot { display: block; height: 100%; max-width: 100%; width: 100%; }
+#pendulum-motion, #simple-harmonic-motion, #pendulum-plot { display: block; height: 100%; max-width: 100%; width: 100%; }
 
 @media (max-width: 780px) {
   .site-header__inner { padding: 16px 18px; }
@@ -141,4 +142,5 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
   .canvas-wrap { aspect-ratio: auto; height: clamp(200px, 58vw, 250px); min-height: 0; }
   .pendulum-visual { padding: 16px; }
   .pendulum-motion-wrap, .pendulum-plot-wrap { height: clamp(220px, 62vw, 270px); min-height: 0; }
+  .shm-motion-wrap { height: clamp(170px, 45vw, 210px); min-height: 0; }
 }

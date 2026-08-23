@@ -32,44 +32,19 @@ function setupCanvas(canvas) {
   return { context, width, height };
 }
 
-function drawLegend(context, x, y) {
-  context.font = "12px Inter, system-ui, sans-serif";
-  context.textBaseline = "middle";
-  context.fillStyle = "#007c76";
-  context.fillRect(x, y - 3, 18, 3);
-  context.fillStyle = "#40515a";
-  context.fillText("振り子 (sin θ)", x + 25, y);
-  context.strokeStyle = "#cc6c28";
-  context.setLineDash([5, 4]);
-  context.beginPath(); context.moveTo(x + 135, y); context.lineTo(x + 153, y); context.stroke();
-  context.setLineDash([]);
-  context.fillStyle = "#40515a";
-  context.fillText("小角近似", x + 160, y);
-}
-
 function drawMotion(progress) {
-  const { values, parameters, samples, duration } = model;
+  const { samples, duration } = model;
   const { context, width, height } = setupCanvas($("pendulum-motion"));
   const pivot = { x: width / 2, y: 38 };
   const rodLength = Math.min(height - 76, width * 0.31);
   const time = duration * progress;
   const nonlinearTheta = interpolateTheta(samples, time);
-  const smallTheta = parameters.angle * Math.cos(parameters.omega * time);
   const point = (theta) => ({ x: pivot.x + rodLength * Math.sin(theta), y: pivot.y + rodLength * Math.cos(theta) });
   const nonlinearPoint = point(nonlinearTheta);
-  const smallPoint = point(smallTheta);
 
   context.strokeStyle = "#e1e7e9";
   context.lineWidth = 1;
   context.beginPath(); context.arc(pivot.x, pivot.y, rodLength, 0, Math.PI, false); context.stroke();
-  drawLegend(context, 18, height - 18);
-  context.strokeStyle = "#cc6c28";
-  context.lineWidth = 2;
-  context.setLineDash([7, 5]);
-  context.beginPath(); context.moveTo(pivot.x, pivot.y); context.lineTo(smallPoint.x, smallPoint.y); context.stroke();
-  context.setLineDash([]);
-  context.fillStyle = "#cc6c28";
-  context.beginPath(); context.arc(smallPoint.x, smallPoint.y, 8, 0, Math.PI * 2); context.fill();
   context.strokeStyle = "#007c76";
   context.lineWidth = 3;
   context.beginPath(); context.moveTo(pivot.x, pivot.y); context.lineTo(nonlinearPoint.x, nonlinearPoint.y); context.stroke();
@@ -78,6 +53,38 @@ function drawMotion(progress) {
   context.fillStyle = "#18222c";
   context.beginPath(); context.arc(pivot.x, pivot.y, 5, 0, Math.PI * 2); context.fill();
   $("pendulum-time").textContent = `t = ${format(time, 4)} / ${format(duration, 4)} s`;
+}
+
+function drawSimpleHarmonicMotion(progress) {
+  const { parameters, duration } = model;
+  const { context, width, height } = setupCanvas($("simple-harmonic-motion"));
+  const time = duration * progress;
+  const center = { x: width / 2, y: height / 2 + 8 };
+  const amplitude = Math.min(width * 0.32, height * 0.28);
+  const position = center.x + amplitude * Math.cos(parameters.omega * time);
+
+  context.strokeStyle = "#dce4e7";
+  context.lineWidth = 2;
+  context.beginPath(); context.moveTo(center.x - amplitude, center.y); context.lineTo(center.x + amplitude, center.y); context.stroke();
+  context.strokeStyle = "#b6c3c8";
+  context.lineWidth = 1;
+  context.setLineDash([4, 4]);
+  [center.x - amplitude, center.x, center.x + amplitude].forEach((x) => {
+    context.beginPath(); context.moveTo(x, center.y - 28); context.lineTo(x, center.y + 28); context.stroke();
+  });
+  context.setLineDash([]);
+  context.font = "12px Inter, system-ui, sans-serif";
+  context.fillStyle = "#52636c";
+  context.textAlign = "center";
+  context.textBaseline = "top";
+  context.fillText("-θ₀", center.x - amplitude, center.y + 36);
+  context.fillText("0", center.x, center.y + 36);
+  context.fillText("+θ₀", center.x + amplitude, center.y + 36);
+  context.textAlign = "left";
+  context.textBaseline = "top";
+  context.fillText("x / L ≈ θ", 18, 16);
+  context.fillStyle = "#cc6c28";
+  context.beginPath(); context.arc(position, center.y, 12, 0, Math.PI * 2); context.fill();
 }
 
 function drawPlot(progress) {
@@ -147,7 +154,7 @@ function update({ shouldAnimate = false } = {}) {
     output.omega.textContent = withUnit(parameters.omega, "rad/s");
     $("pendulum-summary").textContent = `${format(values.angleDeg)}度から静かに離した場合`;
     error.textContent = "";
-    if (shouldAnimate) animate(); else { drawMotion(0); drawPlot(0); }
+    if (shouldAnimate) animate(); else { drawMotion(0); drawSimpleHarmonicMotion(0); drawPlot(0); }
   } catch (reason) {
     error.textContent = reason.message;
   }
@@ -160,6 +167,7 @@ function animate() {
     startedAt ??= timestamp;
     const progress = Math.min((timestamp - startedAt) / visualDuration, 1);
     drawMotion(progress);
+    drawSimpleHarmonicMotion(progress);
     drawPlot(progress);
     if (progress < 1) animationFrame = requestAnimationFrame(render);
   };
@@ -168,5 +176,5 @@ function animate() {
 
 Object.values(inputs).forEach((input) => input.addEventListener("input", () => update()));
 $("pendulum-launch").addEventListener("click", () => update({ shouldAnimate: true }));
-window.addEventListener("resize", () => { if (model) { drawMotion(0); drawPlot(0); } });
+window.addEventListener("resize", () => { if (model) { drawMotion(0); drawSimpleHarmonicMotion(0); drawPlot(0); } });
 update();
