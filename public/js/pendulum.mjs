@@ -9,6 +9,7 @@ const output = {
 };
 let animationFrame;
 let model;
+let displayedProgress = 0;
 
 function format(value, digits = 6) { return Number(value.toPrecision(digits)).toString(); }
 function withUnit(value, unit) { return `${format(value)} ${unit}`; }
@@ -87,7 +88,7 @@ function drawMotion(progress) {
 }
 
 function drawSimpleHarmonicMotion(progress) {
-  const { parameters, samples, duration } = model;
+  const { values, parameters, samples, duration } = model;
   const { context, width, height } = setupCanvas($("simple-harmonic-motion"));
   const motionCanvas = $("pendulum-motion");
   const { rodLength } = pendulumGeometry(motionCanvas.clientWidth, motionCanvas.clientHeight);
@@ -118,6 +119,15 @@ function drawSimpleHarmonicMotion(progress) {
   context.textAlign = "left";
   context.textBaseline = "top";
   context.fillText("振り子の水平位置 x", 18, 16);
+  if (progress === 1) {
+    const nonlinearX = values.length * Math.sin(interpolateTheta(samples, time));
+    const smallX = values.length * Math.sin(smallTheta);
+    context.font = "11px Inter, system-ui, sans-serif";
+    context.fillStyle = "#007c76";
+    context.fillText(`振り子: T=${format(parameters.nonlinearPeriod, 4)} s, x=${format(nonlinearX, 4)} m`, 18, 33);
+    context.fillStyle = "#cc6c28";
+    context.fillText(`小角近似: T=${format(parameters.smallAnglePeriod, 4)} s, x=${format(smallX, 4)} m`, 18, 48);
+  }
   context.fillStyle = "#007c76";
   context.beginPath(); context.arc(nonlinearPosition, center.y, 10, 0, Math.PI * 2); context.fill();
   context.fillStyle = "#cc6c28";
@@ -179,6 +189,7 @@ function drawPlot(progress) {
 
 function update({ shouldAnimate = false } = {}) {
   cancelAnimationFrame(animationFrame);
+  displayedProgress = 0;
   const error = $("pendulum-error");
   try {
     const values = readInputs();
@@ -203,6 +214,7 @@ function animate() {
   const render = (timestamp) => {
     startedAt ??= timestamp;
     const progress = Math.min((timestamp - startedAt) / visualDuration, 1);
+    displayedProgress = progress;
     drawMotion(progress);
     drawSimpleHarmonicMotion(progress);
     drawPlot(progress);
@@ -213,5 +225,5 @@ function animate() {
 
 Object.values(inputs).forEach((input) => input.addEventListener("input", () => update()));
 $("pendulum-launch").addEventListener("click", () => update({ shouldAnimate: true }));
-window.addEventListener("resize", () => { if (model) { drawMotion(0); drawSimpleHarmonicMotion(0); drawPlot(0); } });
+window.addEventListener("resize", () => { if (model) { drawMotion(displayedProgress); drawSimpleHarmonicMotion(displayedProgress); drawPlot(displayedProgress); } });
 update();
