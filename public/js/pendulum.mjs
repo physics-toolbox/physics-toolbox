@@ -32,11 +32,17 @@ function setupCanvas(canvas) {
   return { context, width, height };
 }
 
+function pendulumGeometry(width, height) {
+  return {
+    pivot: { x: width / 2, y: 38 },
+    rodLength: Math.min(height - 76, width * 0.31),
+  };
+}
+
 function drawMotion(progress) {
   const { samples, duration } = model;
   const { context, width, height } = setupCanvas($("pendulum-motion"));
-  const pivot = { x: width / 2, y: 38 };
-  const rodLength = Math.min(height - 76, width * 0.31);
+  const { pivot, rodLength } = pendulumGeometry(width, height);
   const time = duration * progress;
   const nonlinearTheta = interpolateTheta(samples, time);
   const point = (theta) => ({ x: pivot.x + rodLength * Math.sin(theta), y: pivot.y + rodLength * Math.cos(theta) });
@@ -58,9 +64,11 @@ function drawMotion(progress) {
 function drawSimpleHarmonicMotion(progress) {
   const { parameters, duration } = model;
   const { context, width, height } = setupCanvas($("simple-harmonic-motion"));
+  const motionCanvas = $("pendulum-motion");
+  const { rodLength } = pendulumGeometry(motionCanvas.clientWidth, motionCanvas.clientHeight);
   const time = duration * progress;
   const center = { x: width / 2, y: height / 2 + 8 };
-  const amplitude = Math.min(width * 0.32, height * 0.28);
+  const amplitude = Math.min(rodLength * parameters.angle, width * 0.42);
   const position = center.x + amplitude * Math.cos(parameters.omega * time);
 
   context.strokeStyle = "#dce4e7";
