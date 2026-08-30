@@ -125,6 +125,11 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
 .shm-motion-wrap { aspect-ratio: 16 / 3.3; min-height: 150px; }
 .pendulum-plot-wrap { aspect-ratio: 16 / 7; min-height: 250px; }
 #pendulum-motion, #simple-harmonic-motion, #pendulum-plot { display: block; height: 100%; max-width: 100%; width: 100%; }
+.coin-page { max-width: 1040px; }
+.coin-layout { display: grid; grid-template-columns: minmax(0, .9fr) minmax(330px, 1.1fr); gap: 24px; align-items: start; }
+.coin-visual { background: var(--surface); border: 1px solid var(--line); border-radius: 7px; margin-top: 24px; padding: 22px; }
+.coin-histogram-wrap { aspect-ratio: 16 / 7; min-height: 280px; }
+#coin-histogram { display: block; height: 100%; max-width: 100%; width: 100%; }
 
 @media (max-width: 780px) {
   .site-header__inner { padding: 16px 18px; }
@@ -133,6 +138,7 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
   .calculator-grid { grid-template-columns: 1fr; }
   .projectile-layout { grid-template-columns: 1fr; }
   .pendulum-layout { grid-template-columns: 1fr; }
+  .coin-layout { grid-template-columns: 1fr; }
 }
 @media (max-width: 460px) {
   .fields, .metrics { grid-template-columns: 1fr; }
@@ -145,4 +151,6 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
   .pendulum-motion-wrap, .pendulum-plot-wrap { height: clamp(220px, 62vw, 270px); min-height: 0; }
   .small-motion-heading { font-size: .75rem; }
   .shm-motion-wrap { height: clamp(130px, 38vw, 170px); min-height: 0; }
+  .coin-visual { padding: 16px; }
+  .coin-histogram-wrap { height: clamp(230px, 65vw, 300px); min-height: 0; }
 }
