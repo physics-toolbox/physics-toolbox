@@ -126,10 +126,17 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
 .pendulum-plot-wrap { aspect-ratio: 16 / 7; min-height: 250px; }
 #pendulum-motion, #simple-harmonic-motion, #pendulum-plot { display: block; height: 100%; max-width: 100%; width: 100%; }
 .coin-page { max-width: 1040px; }
-.coin-layout { display: grid; grid-template-columns: minmax(0, .9fr) minmax(330px, 1.1fr); gap: 24px; align-items: start; }
+.coin-input-panel { max-width: 500px; }
 .coin-visual { background: var(--surface); border: 1px solid var(--line); border-radius: 7px; margin-top: 24px; padding: 22px; }
+.coin-toss { border-bottom: 1px solid var(--line); margin-bottom: 18px; padding-bottom: 16px; }
+.coin-toss-grid { display: grid; gap: 7px; grid-template-columns: repeat(auto-fill, minmax(34px, 1fr)); }
+.coin-face { align-items: center; aspect-ratio: 1; background: #eef1f2; border: 1px solid #d2dadd; border-radius: 50%; color: #677681; display: flex; font-size: .72rem; font-weight: 750; justify-content: center; }
+.coin-face.is-heads { background: #e4f3ef; border-color: #8cc7bd; color: #006d67; }
+.coin-face.is-tails { background: #fff2e8; border-color: #e3ad81; color: #aa561f; }
+.coin-toss .panel-note { display: block; margin: 10px 0 0; }
 .coin-histogram-wrap { aspect-ratio: 16 / 7; min-height: 280px; }
 #coin-histogram { display: block; height: 100%; max-width: 100%; width: 100%; }
+.coin-results { margin-top: 24px; }
 
 @media (max-width: 780px) {
   .site-header__inner { padding: 16px 18px; }
@@ -138,7 +145,6 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
   .calculator-grid { grid-template-columns: 1fr; }
   .projectile-layout { grid-template-columns: 1fr; }
   .pendulum-layout { grid-template-columns: 1fr; }
-  .coin-layout { grid-template-columns: 1fr; }
 }
 @media (max-width: 460px) {
   .fields, .metrics { grid-template-columns: 1fr; }
@@ -152,5 +158,6 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
   .small-motion-heading { font-size: .75rem; }
   .shm-motion-wrap { height: clamp(130px, 38vw, 170px); min-height: 0; }
   .coin-visual { padding: 16px; }
+  .coin-toss-grid { gap: 6px; grid-template-columns: repeat(auto-fill, minmax(30px, 1fr)); }
   .coin-histogram-wrap { height: clamp(230px, 65vw, 300px); min-height: 0; }
 }
