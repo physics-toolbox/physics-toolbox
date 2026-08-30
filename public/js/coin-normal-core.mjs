@@ -6,11 +6,6 @@ export function binomialProbabilities(coins) {
   return probabilities;
 }
 
-export function normalDensity(x, mean, standardDeviation) {
-  const z = (x - mean) / standardDeviation;
-  return Math.exp(-z * z / 2) / (standardDeviation * Math.sqrt(2 * Math.PI));
-}
-
 export function sampleHeads(coins, random = Math.random) {
   let heads = 0;
   for (let toss = 0; toss < coins; toss += 1) if (random() < 0.5) heads += 1;

@@ -1,4 +1,4 @@
-import { binomialProbabilities, normalDensity, sampleHeads, sampleSummary, tossCoins } from "./coin-normal-core.mjs";
+import { binomialProbabilities, sampleHeads, sampleSummary, tossCoins } from "./coin-normal-core.mjs";
 
 const $ = (id) => document.getElementById(id);
 const inputs = { coins: $("coin-count"), trials: $("trial-count") };
@@ -43,24 +43,18 @@ function drawLegend(context, x, y) {
   context.lineWidth = 2;
   context.beginPath(); context.moveTo(x + 72, y); context.lineTo(x + 90, y); context.stroke();
   context.fillText("二項分布", x + 97, y);
-  context.strokeStyle = "#cc6c28";
-  context.setLineDash([5, 4]);
-  context.beginPath(); context.moveTo(x + 170, y); context.lineTo(x + 188, y); context.stroke();
-  context.setLineDash([]);
-  context.fillText("正規近似", x + 195, y);
+  context.fillText("で期待される回数", x + 161, y);
 }
 
 function drawChart() {
   const { context, width, height } = setupCanvas();
-  const { coins, counts, hasRun, probabilities, normal } = model;
+  const { coins, counts, hasRun, probabilities, trials } = model;
   const summary = sampleSummary(counts);
-  const measured = counts.map((count) => summary.total === 0 ? 0 : count / summary.total);
-  const theoretical = hasRun ? probabilities : Array(coins + 1).fill(0);
-  const normalApproximation = hasRun ? normal : Array(coins + 1).fill(0);
+  const theoretical = hasRun ? probabilities.map((probability) => probability * trials) : Array(coins + 1).fill(0);
   const padding = { left: 52, right: 22, top: 38, bottom: 48 };
   const graphWidth = width - padding.left - padding.right;
   const graphHeight = height - padding.top - padding.bottom;
-  const yMax = Math.max(...measured, ...theoretical, ...normalApproximation, 0.01) * 1.18;
+  const yMax = Math.max(...counts, ...theoretical, 1) * 1.18;
   const xPixel = (heads) => padding.left + (heads + 0.5) / (coins + 1) * graphWidth;
   const yPixel = (probability) => padding.top + graphHeight - probability / yMax * graphHeight;
   const barWidth = graphWidth / (coins + 1);
@@ -75,9 +69,9 @@ function drawChart() {
   context.lineWidth = 1.5;
   context.beginPath(); context.moveTo(padding.left, padding.top); context.lineTo(padding.left, padding.top + graphHeight); context.lineTo(padding.left + graphWidth, padding.top + graphHeight); context.stroke();
   context.fillStyle = "#b8ddd7";
-  measured.forEach((probability, heads) => {
+  counts.forEach((count, heads) => {
     const x = padding.left + heads / (coins + 1) * graphWidth + 1;
-    context.fillRect(x, yPixel(probability), Math.max(1, barWidth - 2), padding.top + graphHeight - yPixel(probability));
+    context.fillRect(x, yPixel(count), Math.max(1, barWidth - 2), padding.top + graphHeight - yPixel(count));
   });
   const drawCurve = (values, color, dash) => {
     context.strokeStyle = color;
@@ -92,21 +86,27 @@ function drawChart() {
   };
   if (hasRun) {
     drawCurve(theoretical, "#007c76", []);
-    drawCurve(normalApproximation, "#cc6c28", [6, 4]);
   }
 
   context.font = "11px Inter, system-ui, sans-serif";
   context.fillStyle = "#52636c";
   context.textAlign = "right";
   context.textBaseline = "middle";
-  for (let i = 0; i <= 4; i += 1) context.fillText(`${format(yMax * (1 - i / 4), 3)}`, padding.left - 7, padding.top + graphHeight * i / 4);
+  for (let i = 0; i <= 4; i += 1) context.fillText(`${Math.round(yMax * (1 - i / 4))}`, padding.left - 7, padding.top + graphHeight * i / 4);
   context.textAlign = "center";
   context.textBaseline = "top";
   const labelStep = coins <= 10 ? 1 : Math.ceil(coins / 5);
   for (let heads = 0; heads <= coins; heads += labelStep) context.fillText(heads, xPixel(heads), padding.top + graphHeight + 7);
   if (coins % labelStep !== 0) context.fillText(coins, xPixel(coins), padding.top + graphHeight + 7);
   context.textAlign = "right";
-  context.fillText("表の回数", padding.left + graphWidth, padding.top + graphHeight + 25);
+  context.fillText("表の数", padding.left + graphWidth, padding.top + graphHeight + 25);
+  context.save();
+  context.translate(14, padding.top + graphHeight / 2);
+  context.rotate(-Math.PI / 2);
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  context.fillText("回数", 0, 0);
+  context.restore();
   if (hasRun) drawLegend(context, 18, 20);
   else {
     context.fillStyle = "#60707e";
@@ -155,7 +155,6 @@ function reset() {
       faces: Array(values.coins).fill(null),
       hasRun: false,
       probabilities: binomialProbabilities(values.coins),
-      normal: Array.from({ length: values.coins + 1 }, (_, heads) => normalDensity(heads, mean, deviation)),
     };
     error.textContent = "";
     updateResults();
@@ -170,19 +169,24 @@ function animate() {
   reset();
   if (!model) return;
   model.hasRun = true;
-  const frameCount = 72;
-  const batchSize = Math.ceil(model.trials / frameCount);
-  const render = () => {
+  const visualDuration = 1600;
+  let startedAt;
+  const render = (timestamp) => {
+    startedAt ??= timestamp;
     const completed = sampleSummary(model.counts).total;
-    const toAdd = Math.min(batchSize, model.trials - completed);
-    const toss = tossCoins(model.coins);
-    model.faces = toss.faces;
-    model.counts[toss.heads] += 1;
-    for (let i = 1; i < toAdd; i += 1) model.counts[sampleHeads(model.coins)] += 1;
+    const progress = Math.min((timestamp - startedAt) / visualDuration, 1);
+    const target = Math.ceil(model.trials * progress);
+    const toAdd = target - completed;
+    if (toAdd > 0) {
+      const toss = tossCoins(model.coins);
+      model.faces = toss.faces;
+      model.counts[toss.heads] += 1;
+      for (let i = 1; i < toAdd; i += 1) model.counts[sampleHeads(model.coins)] += 1;
+    }
     updateResults();
     drawCoins();
     drawChart();
-    if (completed + toAdd < model.trials) animationFrame = requestAnimationFrame(render);
+    if (target < model.trials) animationFrame = requestAnimationFrame(render);
   };
   animationFrame = requestAnimationFrame(render);
 }
