@@ -1,0 +1,27 @@
+#!/bin/sh
+# Refuse a commit whose generated files do not match the pages.
+#
+# The sitemap, robots.txt and canonical tags are produced by build.py.
+# Deploys happen straight off a push, so a forgotten build ships a
+# sitemap that omits the new tool: worse than no sitemap, because it
+# tells a crawler the site has been fully described when it has not.
+#
+# The hook only reports. It never stages anything on your behalf, so a
+# commit is always exactly what you asked for.
+
+set -e
+
+python3 build.py >/dev/null
+
+stale=$(git diff --name-only -- \
+  public/sitemap.xml public/robots.txt 'public/**/index.html' \
+  public/index.html)
+
+if [ -n "$stale" ]; then
+  echo "pre-commit: build.py changed files that are not staged:" >&2
+  echo "$stale" | sed 's/^/  /' >&2
+  echo >&2
+  echo "  git add $(echo "$stale" | tr '\n' ' ')" >&2
+  echo "then commit again." >&2
+  exit 1
+fi
