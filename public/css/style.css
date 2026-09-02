@@ -163,7 +163,8 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
 }
 
 .billiards-layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr); gap: 18px; align-items: start; }
-.billiards-canvas { background: #0f3d2e; border-radius: 10px; overflow: hidden; }
+/* 5/3 matches the simulated table, so little is letterboxed. */
+.billiards-canvas { aspect-ratio: 5 / 3; background: #0b2b21; border-radius: 10px; min-height: 0; overflow: hidden; }
 .billiards-canvas canvas { display: block; width: 100%; touch-action: none; cursor: grab; }
 .billiards-controls { margin-top: 14px; gap: 10px; }
 .checkbox-field { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }

@@ -42,6 +42,22 @@ let wallImpulse = { x: 0, y: 0 };
 let baseline = { momentum: { x: 0, y: 0 }, energy: 0 };
 let lastFrame = 0;
 
+function viewport() {
+  // Fit the table inside whatever box the CSS gives us, rather
+  // than assuming the box matches the table's proportions. It did
+  // not: .canvas-wrap is 16/7 and the table is 5/3, so the bottom
+  // of the table was being clipped away.
+  const scale = Math.min(
+    canvas.width / TABLE_WIDTH,
+    canvas.height / TABLE_HEIGHT,
+  );
+  return {
+    scale,
+    offsetX: (canvas.width - TABLE_WIDTH * scale) / 2,
+    offsetY: (canvas.height - TABLE_HEIGHT * scale) / 2,
+  };
+}
+
 function random(min, max) {
   return min + Math.random() * (max - min);
 }
@@ -93,9 +109,12 @@ function reset() {
 function toTable(event) {
   const rect = canvas.getBoundingClientRect();
   const point = event.touches ? event.touches[0] : event;
+  const { scale, offsetX, offsetY } = viewport();
+  // rect is in CSS pixels, the canvas in device pixels.
+  const density = canvas.width / rect.width;
   return {
-    x: ((point.clientX - rect.left) / rect.width) * TABLE_WIDTH,
-    y: ((point.clientY - rect.top) / rect.height) * TABLE_HEIGHT,
+    x: ((point.clientX - rect.left) * density - offsetX) / scale,
+    y: ((point.clientY - rect.top) * density - offsetY) / scale,
   };
 }
 
@@ -161,10 +180,15 @@ function update() {
 }
 
 function render() {
-  const scale = canvas.width / TABLE_WIDTH;
+  const { scale, offsetX, offsetY } = viewport();
   context.clearRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = '#0f3d2e';
+  context.fillStyle = '#0b2b21';
   context.fillRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = '#0f3d2e';
+  context.fillRect(offsetX, offsetY,
+                   TABLE_WIDTH * scale, TABLE_HEIGHT * scale);
+  context.save();
+  context.translate(offsetX, offsetY);
   for (const ball of balls) {
     context.beginPath();
     context.arc(ball.x * scale, ball.y * scale, ball.radius * scale,
@@ -187,6 +211,7 @@ function render() {
     context.stroke();
     context.setLineDash([]);
   }
+  context.restore();
 }
 
 function frame(now) {
@@ -218,11 +243,14 @@ function frame(now) {
 }
 
 function resize() {
-  const width = canvas.parentElement.clientWidth;
+  const box = canvas.parentElement;
   const ratio = window.devicePixelRatio || 1;
-  canvas.width = width * ratio;
-  canvas.height = (width * TABLE_HEIGHT / TABLE_WIDTH) * ratio;
-  canvas.style.height = `${width * TABLE_HEIGHT / TABLE_WIDTH}px`;
+  // Take the box as given. Its height is the CSS aspect-ratio's to
+  // decide, and viewport() fits the table into whatever results.
+  canvas.width = Math.max(1, box.clientWidth * ratio);
+  canvas.height = Math.max(1, box.clientHeight * ratio);
+  canvas.style.width = `${box.clientWidth}px`;
+  canvas.style.height = `${box.clientHeight}px`;
   render();
 }
 
