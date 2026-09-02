@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://physics-toolbox.ptbx.workers.dev/</loc></url>
+  <url><loc>https://physics-toolbox.ptbx.workers.dev/tools/billiards/</loc></url>
   <url><loc>https://physics-toolbox.ptbx.workers.dev/tools/coin-normal/</loc></url>
   <url><loc>https://physics-toolbox.ptbx.workers.dev/tools/pendulum/</loc></url>
   <url><loc>https://physics-toolbox.ptbx.workers.dev/tools/projectile/</loc></url>

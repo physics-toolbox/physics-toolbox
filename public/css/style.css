@@ -161,3 +161,11 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
   .coin-toss-grid { gap: 6px; grid-template-columns: repeat(auto-fill, minmax(30px, 1fr)); }
   .coin-histogram-wrap { height: clamp(230px, 65vw, 300px); min-height: 0; }
 }
+
+.billiards-layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr); gap: 18px; align-items: start; }
+.billiards-canvas { background: #0f3d2e; border-radius: 10px; overflow: hidden; }
+.billiards-canvas canvas { display: block; width: 100%; touch-action: none; cursor: grab; }
+.billiards-controls { margin-top: 14px; gap: 10px; }
+.checkbox-field { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+.checkbox-field input { width: auto; }
+@media (max-width: 760px) { .billiards-layout { grid-template-columns: 1fr; } }
