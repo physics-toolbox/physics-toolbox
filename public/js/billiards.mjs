@@ -25,9 +25,13 @@ const wallsInput = document.getElementById('walls');
 const frictionInput = document.getElementById('friction');
 const resetButton = document.getElementById('reset');
 const readouts = {
+  cueMass: document.getElementById('cue-mass'),
+  cueSpeed: document.getElementById('cue-speed'),
+  cueVelocity: document.getElementById('cue-velocity'),
+  cueMomentum: document.getElementById('cue-momentum'),
   momentum: document.getElementById('momentum'),
-  momentumX: document.getElementById('momentum-x'),
-  momentumY: document.getElementById('momentum-y'),
+  momentumXY: document.getElementById('momentum-xy'),
+  momentumTotal: document.getElementById('momentum-total'),
   energy: document.getElementById('energy'),
   wallImpulse: document.getElementById('wall-impulse'),
   collisions: document.getElementById('collisions'),
@@ -159,25 +163,36 @@ function onPointerUp() {
 function update() {
   const momentum = totalMomentum(balls);
   const energy = totalKineticEnergy(balls);
-  const withWall = {
-    x: momentum.x + wallImpulse.x,
-    y: momentum.y + wallImpulse.y,
-  };
-  readouts.momentum.textContent = `${Math.hypot(momentum.x, momentum.y)
-    .toFixed(2)} kg·m/s`;
-  readouts.momentumX.textContent = `${momentum.x.toFixed(2)} kg·m/s`;
-  readouts.momentumY.textContent = `${momentum.y.toFixed(2)} kg·m/s`;
+  if (cue) {
+    const speed = Math.hypot(cue.vx, cue.vy);
+    readouts.cueMass.textContent = `${cue.mass.toFixed(2)} kg`;
+    readouts.cueSpeed.textContent = `${speed.toFixed(2)} m/s`;
+    // One cell, so the two components sit beside each other rather
+    // than diagonally across the grid.
+    readouts.cueVelocity.textContent =
+      `(${cue.vx.toFixed(1)}, ${cue.vy.toFixed(1)})`;
+    readouts.cueMomentum.textContent =
+      `${(cue.mass * speed).toFixed(2)} kg·m/s`;
+  }
+  readouts.momentum.textContent =
+    `${Math.hypot(momentum.x, momentum.y).toFixed(2)} kg·m/s`;
+  readouts.momentumXY.textContent =
+    `(${momentum.x.toFixed(1)}, ${momentum.y.toFixed(1)})`;
   readouts.energy.textContent = `${energy.toFixed(2)} J`;
   readouts.collisions.textContent = String(collisions);
-  const drift = Math.hypot(
-    withWall.x - baseline.momentum.x,
-    withWall.y - baseline.momentum.y,
-  );
-  readouts.wallImpulse.textContent = wallsInput.checked
+  const walls = wallsInput.checked;
+  readouts.wallImpulse.textContent = walls
     ? `${Math.hypot(wallImpulse.x, wallImpulse.y).toFixed(2)} kg·m/s`
-    : '0.00 kg·m/s（壁なし）';
-  readouts.wallImpulse.dataset.drift = drift.toFixed(3);
+    : '壁なし';
+  // The wall's impulse J is what it added to the balls, so the sum
+  // fixed at the shot is p - J, not p + J. This is the number that
+  // stays put while |Σp| alone does not.
+  readouts.momentumTotal.textContent = `${Math.hypot(
+    momentum.x - wallImpulse.x,
+    momentum.y - wallImpulse.y,
+  ).toFixed(2)} kg·m/s`;
 }
+
 
 function render() {
   const { scale, offsetX, offsetY } = viewport();
