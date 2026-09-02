@@ -170,3 +170,12 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
 .checkbox-field { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
 .checkbox-field input { width: auto; }
 @media (max-width: 760px) { .billiards-layout { grid-template-columns: 1fr; } }
+
+.ball-table { border-collapse: collapse; font-size: .86rem; width: 100%; }
+.ball-table th, .ball-table td { padding: 6px 4px; text-align: right; }
+.ball-table thead th { color: var(--muted); font-size: .74rem; font-weight: 500; }
+.ball-table tbody th, .ball-table thead th:first-child, .ball-table tfoot th:first-child { text-align: left; }
+.ball-table td { font-variant-numeric: tabular-nums; }
+.ball-table tbody tr { border-top: 1px solid #e8edef; }
+.ball-table tfoot th { border-top: 2px solid var(--line); font-variant-numeric: tabular-nums; padding-top: 8px; }
+.swatch { border: 1px solid rgba(15, 23, 42, .35); border-radius: 50%; display: inline-block; height: 10px; margin-right: 6px; vertical-align: -1px; width: 10px; }

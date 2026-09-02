@@ -5,12 +5,15 @@ import {
   totalMomentum,
 } from './billiards-core.mjs';
 
-const TABLE_WIDTH = 100;
-const TABLE_HEIGHT = 60;
+// A small table so two balls meet quickly and the collision, not
+// the travelling, is what you watch.
+const TABLE_WIDTH = 60;
+const TABLE_HEIGHT = 36;
 const SUBSTEPS = 8;
 const MAX_FRAME_SEC = 0.05;
-const DRAG_TO_SPEED = 0.55;
-const MAX_LAUNCH_SPEED = 60;
+// Metres per second per table unit dragged.
+const DRAG_TO_SPEED = 2;
+const MAX_LAUNCH_SPEED = 30;
 const FRICTION_PER_SEC = 0.06;
 const CUE_COLOUR = '#f8fafc';
 const PALETTE = [
@@ -24,11 +27,10 @@ const ballCountInput = document.getElementById('ball-count');
 const wallsInput = document.getElementById('walls');
 const frictionInput = document.getElementById('friction');
 const resetButton = document.getElementById('reset');
+const ballRows = document.getElementById('ball-rows');
 const readouts = {
-  cueMass: document.getElementById('cue-mass'),
-  cueSpeed: document.getElementById('cue-speed'),
-  cueVelocity: document.getElementById('cue-velocity'),
-  cueMomentum: document.getElementById('cue-momentum'),
+  sumMomentum: document.getElementById('sum-momentum'),
+  sumEnergy: document.getElementById('sum-energy'),
   momentum: document.getElementById('momentum'),
   momentumXY: document.getElementById('momentum-xy'),
   momentumTotal: document.getElementById('momentum-total'),
@@ -45,6 +47,7 @@ let collisions = 0;
 let wallImpulse = { x: 0, y: 0 };
 let baseline = { momentum: { x: 0, y: 0 }, energy: 0 };
 let lastFrame = 0;
+let cells = [];
 
 function viewport() {
   // Fit the table inside whatever box the CSS gives us, rather
@@ -69,7 +72,7 @@ function random(min, max) {
 function placeBalls(count) {
   const placed = [];
   for (let index = 0; index < count; index += 1) {
-    const radius = index === 0 ? 2.2 : random(1.6, 3.2);
+    const radius = index === 0 ? 1.8 : random(1.4, 2.6);
     // Rejection sampling: overlapping starts would resolve into a
     // shove that looks like the simulation inventing energy.
     for (let attempt = 0; attempt < 400; attempt += 1) {
@@ -97,14 +100,45 @@ function placeBalls(count) {
   return placed;
 }
 
+function ballColour(ball) {
+  return ball === cue ? CUE_COLOUR : PALETTE[ball.id % PALETTE.length];
+}
+
+
+function buildRows() {
+  // Rebuilt only when the balls change, so a frame just writes text.
+  ballRows.textContent = '';
+  cells = balls.map((ball) => {
+    const row = document.createElement('tr');
+    const name = document.createElement('th');
+    const swatch = document.createElement('span');
+    swatch.className = 'swatch';
+    swatch.style.background = ballColour(ball);
+    name.appendChild(swatch);
+    name.appendChild(document.createTextNode(
+      ball === cue ? '白' : String(ball.id)));
+    row.appendChild(name);
+    const made = [];
+    for (let index = 0; index < 4; index += 1) {
+      const cell = document.createElement('td');
+      row.appendChild(cell);
+      made.push(cell);
+    }
+    ballRows.appendChild(row);
+    return made;
+  });
+}
+
+
 function reset() {
-  const count = Math.min(12, Math.max(2, Number(ballCountInput.value) || 6));
+  const count = Math.min(12, Math.max(2, Number(ballCountInput.value) || 2));
   balls = placeBalls(count);
   cue = balls[0] ?? null;
   collisions = 0;
   wallImpulse = { x: 0, y: 0 };
   baseline = { momentum: { x: 0, y: 0 }, energy: 0 };
   aim = null;
+  buildRows();
   readouts.hint.textContent = '白い球をドラッグして離すと撃てます';
   render();
   update();
@@ -140,7 +174,7 @@ function onPointerUp() {
   if (!aim || !cue) return;
   const dx = cue.x - aim.x;
   const dy = cue.y - aim.y;
-  const speed = Math.min(Math.hypot(dx, dy) * DRAG_TO_SPEED * 10,
+  const speed = Math.min(Math.hypot(dx, dy) * DRAG_TO_SPEED,
                          MAX_LAUNCH_SPEED);
   const length = Math.hypot(dx, dy) || 1;
   cue.vx += (dx / length) * speed;
@@ -163,17 +197,23 @@ function onPointerUp() {
 function update() {
   const momentum = totalMomentum(balls);
   const energy = totalKineticEnergy(balls);
-  if (cue) {
-    const speed = Math.hypot(cue.vx, cue.vy);
-    readouts.cueMass.textContent = `${cue.mass.toFixed(2)} kg`;
-    readouts.cueSpeed.textContent = `${speed.toFixed(2)} m/s`;
-    // One cell, so the two components sit beside each other rather
-    // than diagonally across the grid.
-    readouts.cueVelocity.textContent =
-      `(${cue.vx.toFixed(1)}, ${cue.vy.toFixed(1)})`;
-    readouts.cueMomentum.textContent =
-      `${(cue.mass * speed).toFixed(2)} kg·m/s`;
-  }
+  balls.forEach((ball, index) => {
+    const row = cells[index];
+    if (!row) return;
+    const speed = Math.hypot(ball.vx, ball.vy);
+    row[0].textContent = ball.mass.toFixed(2);
+    row[1].textContent = speed.toFixed(2);
+    // Per ball the momentum is shown by component: the sum below is
+    // a vector sum, and magnitudes would not add up to it.
+    row[2].textContent =
+      `(${(ball.mass * ball.vx).toFixed(1)}, `
+      + `${(ball.mass * ball.vy).toFixed(1)})`;
+    row[3].textContent =
+      (0.5 * ball.mass * speed ** 2).toFixed(1);
+  });
+  readouts.sumMomentum.textContent =
+    `(${momentum.x.toFixed(1)}, ${momentum.y.toFixed(1)})`;
+  readouts.sumEnergy.textContent = energy.toFixed(1);
   readouts.momentum.textContent =
     `${Math.hypot(momentum.x, momentum.y).toFixed(2)} kg·m/s`;
   readouts.momentumXY.textContent =

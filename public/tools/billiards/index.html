@@ -16,7 +16,7 @@
       <section class="page-heading">
         <p class="eyebrow">MOMENTUM &amp; ENERGY</p>
         <h1>ビリヤードで見る運動量保存シミュレータ</h1>
-        <p>大きさも質量も違う球をランダムに並べ、白い球を撃って衝突させます。すべて弾性衝突なので、合計の運動量と運動エネルギーは衝突の前後で変わりません。数値を見ながら確かめてください。</p>
+        <p>大きさも質量も違う球をランダムに並べ、白い球を撃って衝突させます。既定は2球です。球ごとの運動量とエネルギーを並べているので、ぶつかった前後で個々の値は入れ替わっても合計が変わらないことを確かめられます。すべて弾性衝突なので、合計の運動量と運動エネルギーは衝突の前後で変わりません。数値を見ながら確かめてください。</p>
       </section>
       <div class="billiards-layout">
         <section class="table-section">
@@ -28,13 +28,17 @@
         <section class="results-panel billiards-results" aria-live="polite">
           <div class="results-header"><h2>保存量</h2><p class="result-summary">撃った直後を基準に比べています</p></div>
           <div class="result-group">
-            <h3>白球（手球）</h3>
-            <div class="metrics">
-              <div class="metric"><span class="metric-label">質量 m</span><span id="cue-mass" class="metric-value">-</span></div>
-              <div class="metric"><span class="metric-label">速さ |v|</span><span id="cue-speed" class="metric-value">-</span></div>
-              <div class="metric"><span class="metric-label">速度 (vₓ, v_y)</span><span id="cue-velocity" class="metric-value">-</span></div>
-              <div class="metric"><span class="metric-label">運動量 |p|</span><span id="cue-momentum" class="metric-value">-</span></div>
-            </div>
+            <h3>球ごとの内訳</h3>
+            <table class="ball-table">
+              <thead>
+                <tr><th>球</th><th>質量</th><th>速さ</th><th>運動量 p</th><th>エネルギー E</th></tr>
+              </thead>
+              <tbody id="ball-rows"></tbody>
+              <tfoot>
+                <tr><th>合計</th><th></th><th></th><th id="sum-momentum">-</th><th id="sum-energy">-</th></tr>
+              </tfoot>
+            </table>
+            <p class="panel-note">運動量はベクトルなので、合計は成分どうしを足します。速さの単純な合計とは一致しません。</p>
           </div>
           <div class="result-group">
             <h3>全体の保存量</h3>
@@ -48,7 +52,7 @@
             </div>
           </div>
           <div class="fields billiards-controls">
-            <div class="field"><label for="ball-count">球の数</label><div class="input-with-unit"><input id="ball-count" type="number" value="6" min="2" max="12" step="1" inputmode="numeric" /><span class="unit">個</span></div></div>
+            <div class="field"><label for="ball-count">球の数</label><div class="input-with-unit"><input id="ball-count" type="number" value="2" min="2" max="12" step="1" inputmode="numeric" /><span class="unit">個</span></div></div>
             <label class="checkbox-field"><input id="walls" type="checkbox" checked /> 壁で反射する</label>
             <label class="checkbox-field"><input id="friction" type="checkbox" /> 摩擦で減速させる</label>
           </div>
