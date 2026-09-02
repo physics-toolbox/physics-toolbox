@@ -145,7 +145,8 @@ function buildRows() {
 
 
 function reset() {
-  const count = Math.min(12, Math.max(2, Number(ballCountInput.value) || 2));
+  const count =
+    Math.min(12, Math.max(2, Number(ballCountInput.value) || 3));
   balls = placeBalls(count);
   cue = balls[0] ?? null;
   collisions = 0;

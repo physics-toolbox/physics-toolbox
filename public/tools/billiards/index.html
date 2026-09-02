@@ -16,7 +16,7 @@
       <section class="page-heading">
         <p class="eyebrow">MOMENTUM &amp; ENERGY</p>
         <h1>ビリヤードで見る運動量保存シミュレータ</h1>
-        <p>大きさも質量も違う球をランダムに並べ、白い球を撃って衝突させます。既定は2球です。球ごとの運動量とエネルギーを並べているので、ぶつかった前後で個々の値は入れ替わっても合計が変わらないことを確かめられます。すべて弾性衝突なので、合計の運動量と運動エネルギーは衝突の前後で変わりません。数値を見ながら確かめてください。</p>
+        <p>大きさも質量も違う球をランダムに並べ、白い球を撃って衝突させます。既定は3球です。球ごとの運動量とエネルギーを並べているので、ぶつかった前後で個々の値は入れ替わっても合計が変わらないことを確かめられます。2球にすると衝突が1回きりになり、合計を手計算で検算できます。12球まで増やせば、何度ぶつかっても合計だけが動かない様子を見られます。すべて弾性衝突なので、合計の運動量と運動エネルギーは衝突の前後で変わりません。数値を見ながら確かめてください。</p>
       </section>
       <div class="billiards-layout">
         <section class="table-section">
@@ -52,7 +52,7 @@
             </div>
           </div>
           <div class="fields billiards-controls">
-            <div class="field"><label for="ball-count">球の数</label><div class="input-with-unit"><input id="ball-count" type="number" value="2" min="2" max="12" step="1" inputmode="numeric" /><span class="unit">個</span></div></div>
+            <div class="field"><label for="ball-count">球の数</label><div class="input-with-unit"><input id="ball-count" type="number" value="3" min="2" max="12" step="1" inputmode="numeric" /><span class="unit">個</span></div></div>
             <label class="checkbox-field"><input id="walls" type="checkbox" checked /> 壁で反射する</label>
             <label class="checkbox-field"><input id="friction" type="checkbox" /> 摩擦で減速させる</label>
           </div>
