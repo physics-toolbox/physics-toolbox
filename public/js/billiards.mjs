@@ -16,6 +16,11 @@ const DRAG_TO_SPEED = 2;
 const MAX_LAUNCH_SPEED = 30;
 const FRICTION_PER_SEC = 0.06;
 const CUE_COLOUR = '#f8fafc';
+// The cue always starts here, so a different result comes from the
+// shot rather than from where the ball happened to be put.
+const CUE_RADIUS = 1.8;
+const CUE_X = TABLE_WIDTH * 0.25;
+const CUE_Y = TABLE_HEIGHT / 2;
 const PALETTE = [
   '#ef4444', '#f59e0b', '#10b981', '#3b82f6',
   '#a855f7', '#ec4899', '#14b8a6', '#eab308',
@@ -70,9 +75,17 @@ function random(min, max) {
 }
 
 function placeBalls(count) {
-  const placed = [];
-  for (let index = 0; index < count; index += 1) {
-    const radius = index === 0 ? 1.8 : random(1.4, 2.6);
+  const placed = [createBall({
+    x: CUE_X,
+    y: CUE_Y,
+    vx: 0,
+    vy: 0,
+    mass: Number((CUE_RADIUS * CUE_RADIUS * 0.25).toFixed(2)),
+    radius: CUE_RADIUS,
+    id: 0,
+  })];
+  for (let index = 1; index < count; index += 1) {
+    const radius = random(1.4, 2.6);
     // Rejection sampling: overlapping starts would resolve into a
     // shove that looks like the simulation inventing energy.
     for (let attempt = 0; attempt < 400; attempt += 1) {
@@ -99,6 +112,7 @@ function placeBalls(count) {
   }
   return placed;
 }
+
 
 function ballColour(ball) {
   return ball === cue ? CUE_COLOUR : PALETTE[ball.id % PALETTE.length];
