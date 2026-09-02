@@ -18,7 +18,12 @@ const FRICTION_PER_SEC = 0.06;
 const CUE_COLOUR = '#f8fafc';
 // The cue always starts here, so a different result comes from the
 // shot rather than from where the ball happened to be put.
-const CUE_RADIUS = 1.8;
+// Every ball is identical, as on a real table. Equal masses also
+// buy the demonstration its best result: after an oblique hit on a
+// resting ball, the two paths leave at right angles.
+const BALL_RADIUS = 1.8;
+const BALL_MASS = 1;
+const CUE_RADIUS = BALL_RADIUS;
 const CUE_X = TABLE_WIDTH * 0.25;
 const CUE_Y = TABLE_HEIGHT / 2;
 const PALETTE = [
@@ -80,20 +85,19 @@ function placeBalls(count) {
     y: CUE_Y,
     vx: 0,
     vy: 0,
-    mass: Number((CUE_RADIUS * CUE_RADIUS * 0.25).toFixed(2)),
-    radius: CUE_RADIUS,
+    mass: BALL_MASS,
+    radius: BALL_RADIUS,
     id: 0,
   })];
   for (let index = 1; index < count; index += 1) {
-    const radius = random(1.4, 2.6);
     // Rejection sampling: overlapping starts would resolve into a
     // shove that looks like the simulation inventing energy.
     for (let attempt = 0; attempt < 400; attempt += 1) {
-      const x = random(radius, TABLE_WIDTH - radius);
-      const y = random(radius, TABLE_HEIGHT - radius);
+      const x = random(BALL_RADIUS, TABLE_WIDTH - BALL_RADIUS);
+      const y = random(BALL_RADIUS, TABLE_HEIGHT - BALL_RADIUS);
       const clear = placed.every(
         (other) => Math.hypot(other.x - x, other.y - y)
-          > other.radius + radius + 0.6,
+          > other.radius + BALL_RADIUS + 0.6,
       );
       if (!clear) continue;
       placed.push(createBall({
@@ -101,10 +105,8 @@ function placeBalls(count) {
         y,
         vx: 0,
         vy: 0,
-        // Mass follows area, so a big ball behaving heavily is not a
-        // separate fact the reader has to take on trust.
-        mass: Number((radius * radius * 0.25).toFixed(2)),
-        radius,
+        mass: BALL_MASS,
+        radius: BALL_RADIUS,
         id: index,
       }));
       break;
@@ -133,7 +135,7 @@ function buildRows() {
       ball === cue ? '白' : String(ball.id)));
     row.appendChild(name);
     const made = [];
-    for (let index = 0; index < 4; index += 1) {
+    for (let index = 0; index < 3; index += 1) {
       const cell = document.createElement('td');
       row.appendChild(cell);
       made.push(cell);
@@ -216,14 +218,13 @@ function update() {
     const row = cells[index];
     if (!row) return;
     const speed = Math.hypot(ball.vx, ball.vy);
-    row[0].textContent = ball.mass.toFixed(2);
-    row[1].textContent = speed.toFixed(2);
+    row[0].textContent = speed.toFixed(2);
     // Per ball the momentum is shown by component: the sum below is
     // a vector sum, and magnitudes would not add up to it.
-    row[2].textContent =
+    row[1].textContent =
       `(${(ball.mass * ball.vx).toFixed(1)}, `
       + `${(ball.mass * ball.vy).toFixed(1)})`;
-    row[3].textContent =
+    row[2].textContent =
       (0.5 * ball.mass * speed ** 2).toFixed(1);
   });
   readouts.sumMomentum.textContent =
