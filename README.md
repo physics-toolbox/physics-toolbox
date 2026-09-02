@@ -27,8 +27,9 @@ build.py                regenerates the files that must list every page
 2. Run `python3 build.py`.
 3. Commit and push. The deploy runs off the push.
 
-`build.py` rewrites `sitemap.xml`, `robots.txt` and the canonical link
-in every page from what is actually in `public/`. Keeping the sitemap
+`build.py` rewrites `sitemap.xml`, `robots.txt`, the canonical link
+and the Search Console ownership tag in every page, from what is
+actually in `public/`. Keeping the sitemap
 by hand would eventually miss a tool, and a sitemap that omits a page
 is worse than none: it tells a crawler the site has been fully
 described when it has not.
@@ -54,6 +55,14 @@ Cloudflare serves a managed `robots.txt` when the site has none. It
 carries AI content signals but names no sitemap, so this repository
 ships its own and overrides it. Restoring the signals means adding them
 to the template in `build.py`.
+
+## Search Console
+
+Ownership is proved with a meta tag on every page rather than a
+single uploaded file. A new tool then proves ownership without
+anyone remembering to, and no one file can be deleted and take the
+verification with it. The token is `GOOGLE_SITE_VERIFICATION` in
+`build.py`.
 
 ## If the site moves
 

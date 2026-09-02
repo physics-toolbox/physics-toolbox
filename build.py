@@ -12,8 +12,16 @@ from pathlib import Path
 # this in one place if the site ever moves to its own domain.
 SITE_BASE_URL = "https://physics-toolbox.ptbx.workers.dev"
 
+# Search Console ownership. Emitted on every page rather than kept
+# as a single uploaded file, so a new tool proves ownership without
+# anyone remembering to, and no one file can be lost and take the
+# verification with it.
+GOOGLE_SITE_VERIFICATION = "dS_4E3Jhi096r8VXrxyd1PcpG0NzPhnYGtcGjtiQ7X8"
+
 PUBLIC_DIR = Path(__file__).parent / "public"
 CANONICAL_RE = re.compile(r'\n?\s*<link rel="canonical"[^>]*>')
+VERIFY_RE = re.compile(
+    r'\n?\s*<meta name="google-site-verification"[^>]*>')
 HEAD_ANCHOR = "</title>"
 
 
@@ -43,14 +51,20 @@ def write_robots():
       f"Sitemap: {SITE_BASE_URL}/sitemap.xml\n", encoding="utf-8")
 
 
-def set_canonical(paths):
-  """Point every page at its own URL, replacing any earlier tag."""
+def set_head_tags(paths):
+  """Give every page its canonical URL and the ownership tag."""
   for path in paths:
-    relative = "index.html" if path == "/" else f"{path.strip('/')}/index.html"
+    relative = ("index.html" if path == "/"
+                else f"{path.strip('/')}/index.html")
     file = PUBLIC_DIR / relative
-    html = CANONICAL_RE.sub("", file.read_text(encoding="utf-8"))
-    tag = f'\n    <link rel="canonical" href="{SITE_BASE_URL}{path}" />'
-    html = html.replace(HEAD_ANCHOR, HEAD_ANCHOR + tag, 1)
+    html = file.read_text(encoding="utf-8")
+    html = VERIFY_RE.sub("", CANONICAL_RE.sub("", html))
+    tags = (
+        f'\n    <link rel="canonical" href="{SITE_BASE_URL}{path}" />'
+        '\n    <meta name="google-site-verification"'
+        f' content="{GOOGLE_SITE_VERIFICATION}" />'
+    )
+    html = html.replace(HEAD_ANCHOR, HEAD_ANCHOR + tags, 1)
     file.write_text(html, encoding="utf-8")
 
 
@@ -58,7 +72,7 @@ def main():
   paths = page_paths()
   write_sitemap(paths)
   write_robots()
-  set_canonical(paths)
+  set_head_tags(paths)
   print(f"build: {len(paths)} page(s)")
   for path in paths:
     print(f"  {SITE_BASE_URL}{path}")
