@@ -23,8 +23,9 @@ const CUE_COLOUR = '#f8fafc';
 // resting ball, the two paths leave at right angles.
 const BALL_RADIUS = 1.8;
 const BALL_MASS = 1;
-// When masses vary, the radius carries the difference so a heavy
-// ball looks heavy. Mass follows area.
+// Masses vary by default: a heavy ball barely moving while the cue
+// rebounds is the thing worth seeing, and it needs a difference to
+// show. The radius carries it, so mass follows area.
 const VARIED_RADIUS_MIN = 1.2;
 const VARIED_RADIUS_MAX = 2.8;
 const MASS_PER_AREA = 0.31;
@@ -41,7 +42,7 @@ const context = canvas.getContext('2d');
 const ballCountInput = document.getElementById('ball-count');
 const wallsInput = document.getElementById('walls');
 const frictionInput = document.getElementById('friction');
-const varyMassInput = document.getElementById('vary-mass');
+const equalMassInput = document.getElementById('equal-mass');
 const resetButton = document.getElementById('reset');
 const ballRows = document.getElementById('ball-rows');
 const readouts = {
@@ -95,7 +96,7 @@ function placeBalls(count) {
     radius: BALL_RADIUS,
     id: 0,
   })];
-  const vary = varyMassInput.checked;
+  const vary = !equalMassInput.checked;
   for (let index = 1; index < count; index += 1) {
     const radius = vary
       ? random(VARIED_RADIUS_MIN, VARIED_RADIUS_MAX)
@@ -347,7 +348,7 @@ canvas.addEventListener('touchmove', onPointerMove, { passive: false });
 window.addEventListener('touchend', onPointerUp);
 resetButton.addEventListener('click', reset);
 ballCountInput.addEventListener('change', reset);
-varyMassInput.addEventListener('change', reset);
+equalMassInput.addEventListener('change', reset);
 window.addEventListener('resize', resize);
 
 resize();
