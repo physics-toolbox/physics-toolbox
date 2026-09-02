@@ -23,6 +23,11 @@ const CUE_COLOUR = '#f8fafc';
 // resting ball, the two paths leave at right angles.
 const BALL_RADIUS = 1.8;
 const BALL_MASS = 1;
+// When masses vary, the radius carries the difference so a heavy
+// ball looks heavy. Mass follows area.
+const VARIED_RADIUS_MIN = 1.2;
+const VARIED_RADIUS_MAX = 2.8;
+const MASS_PER_AREA = 0.31;
 const CUE_RADIUS = BALL_RADIUS;
 const CUE_X = TABLE_WIDTH * 0.25;
 const CUE_Y = TABLE_HEIGHT / 2;
@@ -36,6 +41,7 @@ const context = canvas.getContext('2d');
 const ballCountInput = document.getElementById('ball-count');
 const wallsInput = document.getElementById('walls');
 const frictionInput = document.getElementById('friction');
+const varyMassInput = document.getElementById('vary-mass');
 const resetButton = document.getElementById('reset');
 const ballRows = document.getElementById('ball-rows');
 const readouts = {
@@ -89,15 +95,22 @@ function placeBalls(count) {
     radius: BALL_RADIUS,
     id: 0,
   })];
+  const vary = varyMassInput.checked;
   for (let index = 1; index < count; index += 1) {
+    const radius = vary
+      ? random(VARIED_RADIUS_MIN, VARIED_RADIUS_MAX)
+      : BALL_RADIUS;
+    const mass = vary
+      ? Number((radius * radius * MASS_PER_AREA).toFixed(2))
+      : BALL_MASS;
     // Rejection sampling: overlapping starts would resolve into a
     // shove that looks like the simulation inventing energy.
     for (let attempt = 0; attempt < 400; attempt += 1) {
-      const x = random(BALL_RADIUS, TABLE_WIDTH - BALL_RADIUS);
-      const y = random(BALL_RADIUS, TABLE_HEIGHT - BALL_RADIUS);
+      const x = random(radius, TABLE_WIDTH - radius);
+      const y = random(radius, TABLE_HEIGHT - radius);
       const clear = placed.every(
         (other) => Math.hypot(other.x - x, other.y - y)
-          > other.radius + BALL_RADIUS + 0.6,
+          > other.radius + radius + 0.6,
       );
       if (!clear) continue;
       placed.push(createBall({
@@ -105,8 +118,8 @@ function placeBalls(count) {
         y,
         vx: 0,
         vy: 0,
-        mass: BALL_MASS,
-        radius: BALL_RADIUS,
+        mass,
+        radius,
         id: index,
       }));
       break;
@@ -135,7 +148,7 @@ function buildRows() {
       ball === cue ? '白' : String(ball.id)));
     row.appendChild(name);
     const made = [];
-    for (let index = 0; index < 3; index += 1) {
+    for (let index = 0; index < 4; index += 1) {
       const cell = document.createElement('td');
       row.appendChild(cell);
       made.push(cell);
@@ -218,13 +231,14 @@ function update() {
     const row = cells[index];
     if (!row) return;
     const speed = Math.hypot(ball.vx, ball.vy);
-    row[0].textContent = speed.toFixed(2);
+    row[0].textContent = ball.mass.toFixed(2);
+    row[1].textContent = speed.toFixed(2);
     // Per ball the momentum is shown by component: the sum below is
     // a vector sum, and magnitudes would not add up to it.
-    row[1].textContent =
+    row[2].textContent =
       `(${(ball.mass * ball.vx).toFixed(1)}, `
       + `${(ball.mass * ball.vy).toFixed(1)})`;
-    row[2].textContent =
+    row[3].textContent =
       (0.5 * ball.mass * speed ** 2).toFixed(1);
   });
   readouts.sumMomentum.textContent =
@@ -333,6 +347,7 @@ canvas.addEventListener('touchmove', onPointerMove, { passive: false });
 window.addEventListener('touchend', onPointerUp);
 resetButton.addEventListener('click', reset);
 ballCountInput.addEventListener('change', reset);
+varyMassInput.addEventListener('change', reset);
 window.addEventListener('resize', resize);
 
 resize();
